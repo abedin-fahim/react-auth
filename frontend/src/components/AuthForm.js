@@ -1,9 +1,14 @@
-import { Form, Link, useSearchParams } from 'react-router-dom';
+import { Form, Link, useSearchParams, useActionData, useNavigation } from 'react-router-dom';
 
 import classes from './AuthForm.module.css';
 import { Fragment } from 'react';
 
 function AuthForm() {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === 'submitting'
+
+  const data = useActionData();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const isLogin = searchParams.get('mode') === 'login'
 
@@ -19,11 +24,18 @@ function AuthForm() {
           <label htmlFor="image">Password</label>
           <input id="password" type="password" name="password" required />
         </p>
+        {/* {data && data.errors && (
+          <ul>
+            {Object.keys(data.errors).map(error => <li key={error}>{error}</li>)}
+          </ul>
+        )} */}
+        {data && data.message && <p>{data.message}</p>}
+
         <div className={classes.actions}>
           <Link to={`?mode=${isLogin ? 'signup' : 'login'}`}>
             {isLogin ? 'Create new user' : 'Login'}
           </Link>
-          <button>Save</button>
+          <button disabled={isSubmitting}>{isSubmitting ? 'Submitting' : 'Save'}</button>
         </div>
       </Form>
     </Fragment>
